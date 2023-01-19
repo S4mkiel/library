@@ -43,6 +43,7 @@ func main() {
 				break
 			} else if choice == "n" {
 				fmt.Println("Welcome back")
+				main()
 				break
 			} else {
 				fmt.Println("Invalid choice")
