@@ -1,9 +1,8 @@
 package main
 
 import (
+	"library/gorm"
 	"fmt"
-	"gorm/database"
-	"checkmail/checkmail"
 )
 
 func main() {
@@ -30,12 +29,10 @@ func main() {
 		fmt.Scanln(&bookQuantity)
 		
 		db:= database.Book{}
-		database.Database().Create(&db{
-			BookName: bookName,
-			AuthorName: authorName,
-			BookPrice: bookPrice,
-			BookQuantity: bookQuantity,
-		})
+		db.BookName = bookName
+		db.AuthorName = authorName
+		db.BookPrice = bookPrice
+		db.BookQuantity = bookQuantity
 
 		fmt.Println("Book added successfully")
 		
@@ -73,6 +70,7 @@ func main() {
 						fmt.Println(database.Database().Find(&bookName))
 						break
 					}
+					
 			}
 		}
 		}
@@ -109,5 +107,4 @@ func main() {
 			}
 		}
 	}
-
 }
