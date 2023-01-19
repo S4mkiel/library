@@ -15,7 +15,5 @@ func Check(){
 	}else {
 		fmt.Println("Valid email address")
 	}
-	
-
 
 }

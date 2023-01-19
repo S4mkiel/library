@@ -23,4 +23,6 @@ func Database(){
 		fmt.Println("Database connected successfully")
 	}
 	db.AutoMigrate(&Book{})
+	db.Create(&Book{BookId: 1, BookName: "The Alchemist", AuthorName: "Paulo Coelho", BookPrice: 200, BookQuantity: 10})
+	
 }
