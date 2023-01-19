@@ -5,13 +5,8 @@ import (
 	"library/checkmail"
 )
 
-func login(){
-	checkmail.Login() //import checkmail package
-}
-
-
 func main() {
-	login()
+	checkmail.Login()
 	fmt.Println("Welcome to Library System")
 	fmt.Println("What do you want to do?\n1. Add a book\n2. Search a book or Delete\n3. Exit")
 	var choice int
