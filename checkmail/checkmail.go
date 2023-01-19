@@ -1,4 +1,4 @@
-package Checkmail
+package checkmail
 
 import (
 	"fmt"
