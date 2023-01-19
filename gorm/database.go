@@ -15,7 +15,7 @@ type Book struct {
 	BookQuantity int
 }
 
-func Database(){
+func Database() {
 	db,err := gorm.Open(sqlite.Open("library.db"), &gorm.Config{})
 	if err != nil{
 		panic("failed to connect database")
@@ -23,6 +23,5 @@ func Database(){
 		fmt.Println("Database connected successfully")
 	}
 	db.AutoMigrate(&Book{})
-	db.Create(&Book{BookId: 1, BookName: "The Alchemist", AuthorName: "Paulo Coelho", BookPrice: 200, BookQuantity: 10})
 	
 }

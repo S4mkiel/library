@@ -1,7 +1,6 @@
 package main
 
 import (
-	"library/gorm"
 	"fmt"
 )
 
@@ -27,53 +26,12 @@ func main() {
 
 		fmt.Println("Enter the book quantity:")
 		fmt.Scanln(&bookQuantity)
-		
-		db:= database.Book{}
-		db.BookName = bookName
-		db.AuthorName = authorName
-		db.BookPrice = bookPrice
-		db.BookQuantity = bookQuantity
 
 		fmt.Println("Book added successfully")
 		
 	case 2:
 		fmt.Println("Search a book or Delete a book")
-		for {
-			fmt.Println("Do you want to delete the book? (y/n)")
-			var choice string
-			fmt.Scanln(&choice)
-			if choice == "y" {
-				fmt.Println("Enter the book name:")
-				var bookName string
-				fmt.Scanln(&bookName)
-				err, db:= database.Book{}, database.Book{}
-				if err != nil {
-					fmt.Println("Book not found")
-				}else{
-					database.Database().Delete(&db)
-					fmt.Println("Book deleted successfully")
-					break
-				}
-			}else if choice == "n" {
-				fmt.Println("Do you want to search for some book? (y/n)")
-				var choice string
-				fmt.Scanln(&choice)
-				if choice == "y" {
-					fmt.Println("Enter the book name:")
-					var bookName string
-					fmt.Scanln(&bookName)
-					err, db:= database.Book{}, database.Book{}
-					if err != nil {
-						fmt.Println("Book not found")
-					}else{
-						database.Database().Find(&db)
-						fmt.Println(database.Database().Find(&bookName))
-						break
-					}
 					
-			}
-		}
-		}
 	case 3:
 		fmt.Println("Exit")
 		for {
