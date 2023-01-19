@@ -1,27 +1,20 @@
-package database
+package gorm 
 
 import (
 	"fmt"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	
 )
 
 type Book struct {
 	gorm.Model
-	BookId int
 	BookName string
 	AuthorName string
 	BookPrice int
 	BookQuantity int
 }
 
-func Database() {
-	db,err := gorm.Open(sqlite.Open("library.db"), &gorm.Config{})
-	if err != nil{
-		panic("failed to connect database")
-	}else {
-		fmt.Println("Database connected successfully")
-	}
-	db.AutoMigrate(&Book{})
-	
+func main (){
+	//...
 }
