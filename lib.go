@@ -39,9 +39,13 @@ func main() {
 				isbn, _ := cmd.Flags().GetString("isbn")
 				db := connect()
 				defer db.Close()
-				if err := db.Create(&Book{Title: title, Author: author, ISBN: isbn}).Error; err != nil {
+				tx := db.Begin()
+				if err := tx.Create(&Book{Title: title, Author: author, ISBN: isbn}).Error; err != nil {
+					tx.Rollback()
 					log.Fatalf("Failed to create book: %v", err)
+				
 				}
+				tx.Commit()
 				fmt.Println("Book added successfully")
 			},
 		}
