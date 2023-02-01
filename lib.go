@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -26,6 +27,11 @@ func main() {
 	switch choice {
 		
 	case 1:
+		fmt.Println("Write the details of the book\nPs: Title, Author and ISBN are required with command: create --title <title> --author <author> --isbn <isbn>")
+		var create string
+		fmt.Scanln(&create)
+		// Split the create string into separate arguments
+		createArgs := strings.Split(create, " ")
 		var rootCmd = &cobra.Command{Use: "app"}
 		var createCmd = &cobra.Command{
 			Use: "create",
@@ -44,15 +50,18 @@ func main() {
 				fmt.Println("Book added successfully")
 			},
 		}
-		createCmd.Flags().String("title", "", "Title of the book")
-		createCmd.MarkFlagRequired("title")
-		createCmd.Flags().String("author", "", "Author of the book")
-		createCmd.MarkFlagRequired("author")
-		createCmd.Flags().String("isbn", "", "ISBN of the book")
-		createCmd.MarkFlagRequired("isbn")
+		var Title string
+		var Author string
+		var ISBN string	
+		createCmd.Flags().StringVarP(&Title, "title", "t", "", "title of the book")
+		createCmd.Flags().StringVarP(&Author, "author", "a", "", "author of the book")
+		createCmd.Flags().StringVarP(&ISBN, "isbn", "i", "", "isbn of the book")
 		rootCmd.AddCommand(createCmd)
-		rootCmd.Execute()
-
+		rootCmd.SetArgs(createArgs)
+		err := rootCmd.Execute()
+		if err != nil {
+			fmt.Println(err)
+		}
 	case 2:
 		fmt.Println("Search a book or Delete a book")
 		var rootCmd = &cobra.Command{Use: "app"}
