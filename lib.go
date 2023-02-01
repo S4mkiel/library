@@ -18,44 +18,36 @@ type Book struct {
 }
 
 func main() {
-	db := connect()
-	defer db.Close()
 	fmt.Println("Welcome to Library System")
 	fmt.Println("What do you want to do?\n1. Add a book\n2. Search a book or Delete\n3. Exit")
 	var choice int
 	fmt.Scanln(&choice)
 	switch choice {
-		
 	case 1:
 		fmt.Println("Write the details of the book\nPs: Title, Author and ISBN are required with command: create --title <title> --author <author> --isbn <isbn>")
 		var create string
 		fmt.Scanln(&create)
-		// Split the create string into separate arguments
+
 		createArgs := strings.Split(create, " ")
 		var rootCmd = &cobra.Command{Use: "app"}
 		var createCmd = &cobra.Command{
-			Use: "create",
+			Use:   "create",
 			Short: "Create a new book",
-			Run: func(cmd *cobra.Command, args []string){
-				Title, _ := cmd.Flags().GetString("title")
-				Author, _ := cmd.Flags().GetString("author")
-				ISBN, _ := cmd.Flags().GetString("isbn")
+			Run: func(cmd *cobra.Command, args []string) {
+				title, _ := cmd.Flags().GetString("title")
+				author, _ := cmd.Flags().GetString("author")
+				isbn, _ := cmd.Flags().GetString("isbn")
 				db := connect()
-				tx := db.Begin()
-				if err := tx.Create(&Book{Title: Title, Author: Author, ISBN: ISBN}).Error; err != nil {
-					tx.Rollback()
-					return
+				defer db.Close()
+				if err := db.Create(&Book{Title: title, Author: author, ISBN: isbn}).Error; err != nil {
+					log.Fatalf("Failed to create book: %v", err)
 				}
-				tx.Commit()
 				fmt.Println("Book added successfully")
 			},
 		}
-		var Title string
-		var Author string
-		var ISBN string	
-		createCmd.Flags().StringVarP(&Title, "title", "t", "", "title of the book")
-		createCmd.Flags().StringVarP(&Author, "author", "a", "", "author of the book")
-		createCmd.Flags().StringVarP(&ISBN, "isbn", "i", "", "isbn of the book")
+		createCmd.Flags().StringP("title", "t", "", "title of the book")
+		createCmd.Flags().StringP("author", "a", "", "author of the book")
+		createCmd.Flags().StringP("isbn", "i", "", "isbn of the book")
 		rootCmd.AddCommand(createCmd)
 		rootCmd.SetArgs(createArgs)
 		err := rootCmd.Execute()
@@ -63,22 +55,31 @@ func main() {
 			fmt.Println(err)
 		}
 	case 2:
-		fmt.Println("Search a book or Delete a book")
+		fmt.Println("Search a book or Delete a book\nPS: Search a book with command: search --title <title> and Delete a book with command: delete --isbn <isbn>")
+		var search string
+		fmt.Print("Enter search term: ")
+		fmt.Scanln(&search)
+		searchArgs := strings.Split(search, " ")
+
 		var rootCmd = &cobra.Command{Use: "app"}
 		var searchCmd = &cobra.Command{
-			Use: "search",
-			Run: func(cmd *cobra.Command, args []string){
-				isbn, _ := cmd.Flags().GetString("isbn")
-				var book Book
+			Use:   "search",
+			Short: "Search for books in the database",
+			Run: func(cmd *cobra.Command, args []string) {
+				title, _ := cmd.Flags().GetString("title")
+				var books []Book
 				db := connect()
-				if err := db.Where("isbn = ?", isbn).First(&book).Error; err != nil {
+				if err := db.Where("title LIKE ?", "%"+title+"%").Find(&books).Error; err != nil {
 					log.Fatal(err)
 				}
-				fmt.Println(book)
+				for _, book := range books {
+					fmt.Println(book)
+				}
 			},
 		}
 		var deleteCmd = &cobra.Command{
 			Use: "delete",
+			Short: "Delete a book from the database",
 			Run: func(cmd *cobra.Command, args []string){
 				isbn, _ := cmd.Flags().GetString("isbn")
 				var book Book
@@ -95,13 +96,15 @@ func main() {
 				fmt.Println("Book deleted successfully")
 			},
 		}
-		searchCmd.Flags().String("isbn", "", "ISBN of the book")
-		searchCmd.MarkFlagRequired("isbn")
+		var Title string
+		searchCmd.Flags().StringVarP(&Title, "title", "t", "", "title of the book")
 		deleteCmd.Flags().String("isbn", "", "ISBN of the book")
 		deleteCmd.MarkFlagRequired("isbn")
 		rootCmd.AddCommand(searchCmd, deleteCmd)
-		rootCmd.Execute()
-
+		rootCmd.SetArgs(searchArgs)
+		if err := rootCmd.Execute(); err != nil {
+			log.Fatal(err)
+		}
 	case 3:
 		fmt.Println("Thank you for using our system")
 
